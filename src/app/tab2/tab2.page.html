@@ -1,0 +1,358 @@
+<app-shell
+  section="profile"
+  [userName]="profile?.name || ''"
+  [userRole]="profile?.role || 'user'"
+  (reload)="refreshProfile()">
+
+
+  <ion-content [fullscreen]="true">
+
+
+    <ion-refresher
+      slot="fixed"
+      (ionRefresh)="refresh($event)">
+
+      <ion-refresher-content
+        pullingText="Pull to refresh"
+        refreshingSpinner="crescent"
+        refreshingText="Refreshing…">
+      </ion-refresher-content>
+
+    </ion-refresher>
+
+
+    <div class="ph-page profile-page">
+
+
+      <!-- ============ Identity card ============ -->
+
+      <section class="ph-surface identity-card">
+
+        <div class="identity-card__banner" aria-hidden="true"></div>
+
+
+        <div class="ph-card-body identity-card__body">
+
+          <span class="identity-card__avatar" aria-hidden="true">
+
+            {{
+              initials ||
+              (isLoading ? '…' : '?')
+            }}
+
+          </span>
+
+
+          @if (isLoading) {
+
+          <div class="identity-card__skeleton" aria-hidden="true">
+
+            <span class="ph-skeleton skeleton-line skeleton-line--lg">
+            </span>
+
+            <span class="ph-skeleton skeleton-line skeleton-line--sm">
+            </span>
+
+          </div>
+
+          <span class="visually-hidden" role="status">
+            Loading your profile
+          </span>
+
+          }
+
+          @else if (loadError) {
+
+          <div role="alert" class="identity-card__error">
+
+            <ion-icon
+              name="alert-circle-outline"
+              aria-hidden="true">
+            </ion-icon>
+
+            <p>{{ loadError }}</p>
+
+
+            <ion-button
+              size="small"
+              fill="outline"
+              (click)="refreshProfile()">
+
+              Try again
+
+            </ion-button>
+
+          </div>
+
+          }
+
+          @else {
+
+          <h1 class="identity-card__name">
+            {{ profile?.name }}
+          </h1>
+
+
+          <p class="identity-card__email">
+            {{ profile?.email }}
+          </p>
+
+
+          <span
+            class="ph-pill"
+            [class.role-pill--admin]="isAdmin">
+
+            <ion-icon
+              [name]="
+                isAdmin
+                  ? 'shield-checkmark-outline'
+                  : 'person-outline'
+              "
+              aria-hidden="true">
+            </ion-icon>
+
+
+            {{
+              isAdmin
+                ? 'Administrator'
+                : 'Shop member'
+            }}
+
+          </span>
+
+          }
+
+        </div>
+
+      </section>
+
+
+      <!-- ============ Snapshot ============ -->
+
+      @if (!isLoading && !loadError) {
+
+      <section
+        class="snapshot"
+        aria-label="Your inventory at a glance">
+
+
+        <article class="ph-surface snapshot__item">
+
+          <div class="ph-card-body">
+
+            <span class="ph-stat__label">
+              Bikes listed
+            </span>
+
+            <strong class="ph-stat__value">
+              {{ snapshot.listed }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="ph-surface snapshot__item">
+
+          <div class="ph-card-body">
+
+            <span class="ph-stat__label">
+              Available
+            </span>
+
+            <strong class="ph-stat__value">
+              {{ snapshot.available }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="ph-surface snapshot__item">
+
+          <div class="ph-card-body">
+
+            <span class="ph-stat__label">
+              Reserved
+            </span>
+
+            <strong class="ph-stat__value">
+              {{ snapshot.reserved }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+        <article class="ph-surface snapshot__item">
+
+          <div class="ph-card-body">
+
+            <span class="ph-stat__label">
+              Units in stock
+            </span>
+
+            <strong class="ph-stat__value">
+              {{ snapshot.totalStock }}
+            </strong>
+
+          </div>
+
+        </article>
+
+
+      </section>
+
+      }
+
+
+      <!-- ============ Account details ============ -->
+
+      <section
+        class="ph-surface details-card"
+        aria-labelledby="account-details-title">
+
+        <div class="ph-card-body">
+
+          <h2
+            class="details-card__title"
+            id="account-details-title">
+
+            Account details
+
+          </h2>
+
+
+          <dl class="details-list">
+
+            <div class="details-list__row">
+
+              <dt>
+                <ion-icon
+                  name="person-outline"
+                  aria-hidden="true">
+                </ion-icon>
+
+                Name
+
+              </dt>
+
+              <dd>{{ profile?.name || '—' }}</dd>
+
+            </div>
+
+
+            <div class="details-list__row">
+
+              <dt>
+                <ion-icon
+                  name="mail-outline"
+                  aria-hidden="true">
+                </ion-icon>
+
+                Email
+
+              </dt>
+
+              <dd>{{ profile?.email || '—' }}</dd>
+
+            </div>
+
+
+            <div class="details-list__row">
+
+              <dt>
+                <ion-icon
+                  name="shield-checkmark-outline"
+                  aria-hidden="true">
+                </ion-icon>
+
+                Access level
+
+              </dt>
+
+              <dd>
+
+                {{
+                  isAdmin
+                    ? 'Administrator'
+                    : 'Shop member'
+                }}
+
+              </dd>
+
+            </div>
+
+          </dl>
+
+
+          @if (isAdmin) {
+
+          <ion-button
+            expand="block"
+            fill="outline"
+            class="admin-link"
+            href="/admin-dashboard">
+
+            <ion-icon
+              slot="start"
+              name="shield-checkmark-outline">
+            </ion-icon>
+
+            Open the admin dashboard
+
+          </ion-button>
+
+          }
+
+        </div>
+
+      </section>
+
+
+      <!-- ============ Session ============ -->
+
+      <section class="ph-surface session-card">
+
+        <div class="ph-card-body">
+
+          <h2 class="details-card__title">
+            Session
+          </h2>
+
+
+          <p class="session-card__copy">
+            You are signed in on this device. Signing out clears
+            the session but keeps your inventory untouched.
+          </p>
+
+
+          <ion-button
+            expand="block"
+            fill="outline"
+            color="danger"
+            [disabled]="isSigningOut"
+            (click)="signOut()">
+
+            <ion-icon
+              slot="start"
+              name="log-out-outline">
+            </ion-icon>
+
+            {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
+
+          </ion-button>
+
+        </div>
+
+      </section>
+
+
+    </div>
+
+  </ion-content>
+
+</app-shell>

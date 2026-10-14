@@ -1,0 +1,444 @@
+<ion-content [fullscreen]="true">
+
+  <div class="auth-shell">
+
+    <aside class="auth-aside" aria-hidden="true">
+
+      <div class="auth-aside__inner">
+
+        <span class="brand-lockup">
+
+          <span class="brand-mark">
+            <ion-icon name="bicycle"></ion-icon>
+          </span>
+
+          <span class="brand-name">
+            Pedalhaus
+          </span>
+
+        </span>
+
+
+        <h2 class="auth-aside__headline">
+          Set up shop in under a minute.
+        </h2>
+
+
+        <p class="auth-aside__copy">
+          Your account is tied to the bikes you list, so the
+          workshop, the showroom and the books always agree.
+        </p>
+
+
+        <ul class="auth-aside__list">
+
+          <li>
+            <ion-icon name="albums-outline"></ion-icon>
+            Catalogue bikes with photos and specs
+          </li>
+
+          <li>
+            <ion-icon name="sync-outline"></ion-icon>
+            Move stock between available, reserved and sold
+          </li>
+
+          <li>
+            <ion-icon name="trending-up-outline"></ion-icon>
+            Track the value of your showroom floor
+          </li>
+
+        </ul>
+
+      </div>
+
+    </aside>
+
+
+    <main class="auth-panel">
+
+      <div class="auth-card-surface">
+
+
+        <header class="auth-header">
+
+          <span class="brand-mark brand-mark--compact">
+            <ion-icon name="bicycle"></ion-icon>
+          </span>
+
+
+          <h1 class="ph-title">
+            Create your account
+          </h1>
+
+
+          <p class="ph-subtitle">
+            Free to start. No card required.
+          </p>
+
+        </header>
+
+
+        <form
+          class="auth-form"
+          novalidate
+          (submit)="$event.preventDefault(); signup()">
+
+
+          <ion-item lines="none" class="field">
+
+            <ion-input
+
+              name="name"
+
+              type="text"
+
+              autocomplete="name"
+
+              label="Full name"
+
+              labelPlacement="stacked"
+
+              placeholder="Alex Rider"
+
+              enterkeyhint="next"
+
+              [autofocus]="true"
+
+              [value]="name"
+
+              [attr.aria-invalid]="
+                submitted && nameError
+                  ? 'true'
+                  : null
+              "
+
+              [attr.aria-describedby]="
+                submitted && nameError
+                  ? 'signup-name-error'
+                  : null
+              "
+
+              (ionInput)="
+                name = $any($event).detail.value || ''
+              ">
+
+            </ion-input>
+
+          </ion-item>
+
+
+          @if (submitted && nameError) {
+
+          <p
+            class="field-error"
+            id="signup-name-error"
+            role="alert">
+
+            {{ nameError }}
+
+          </p>
+
+          }
+
+
+          <ion-item lines="none" class="field">
+
+            <ion-input
+
+              name="email"
+
+              type="email"
+
+              inputmode="email"
+
+              autocomplete="email"
+
+              label="Email address"
+
+              labelPlacement="stacked"
+
+              placeholder="you@example.com"
+
+              enterkeyhint="next"
+
+              [value]="email"
+
+              [attr.aria-invalid]="
+                submitted && emailError
+                  ? 'true'
+                  : null
+              "
+
+              [attr.aria-describedby]="
+                submitted && emailError
+                  ? 'signup-email-error'
+                  : null
+              "
+
+              (ionInput)="
+                email = $any($event).detail.value || ''
+              ">
+
+            </ion-input>
+
+          </ion-item>
+
+
+          @if (submitted && emailError) {
+
+          <p
+            class="field-error"
+            id="signup-email-error"
+            role="alert">
+
+            {{ emailError }}
+
+          </p>
+
+          }
+
+
+          <ion-item lines="none" class="field">
+
+            <ion-input
+
+              name="password"
+
+              [type]="
+                passwordVisible
+                  ? 'text'
+                  : 'password'
+              "
+
+              autocomplete="new-password"
+
+              label="Password"
+
+              labelPlacement="stacked"
+
+              placeholder="At least 6 characters"
+
+              enterkeyhint="next"
+
+              [value]="password"
+
+              [attr.aria-invalid]="
+                submitted && passwordError
+                  ? 'true'
+                  : null
+              "
+
+              [attr.aria-describedby]="
+                submitted && passwordError
+                  ? 'signup-password-error'
+                  : null
+              "
+
+              (ionInput)="
+                password = $any($event).detail.value || ''
+              ">
+
+
+              <ion-button
+
+                slot="end"
+
+                fill="clear"
+
+                size="small"
+
+                class="reveal"
+
+                type="button"
+
+                [attr.aria-label]="
+                  passwordVisible
+                    ? 'Hide password'
+                    : 'Show password'
+                "
+
+                [attr.aria-pressed]="passwordVisible"
+
+                (click)="togglePasswordVisibility()">
+
+                <ion-icon
+                  slot="icon-only"
+                  [name]="
+                    passwordVisible
+                      ? 'eye-off-outline'
+                      : 'eye-outline'
+                  ">
+                </ion-icon>
+
+              </ion-button>
+
+
+            </ion-input>
+
+          </ion-item>
+
+
+          @if (password) {
+
+          <div class="strength">
+
+            <div
+              class="strength__track"
+              role="img"
+              [attr.aria-label]="
+                'Password strength: ' +
+                passwordStrength.label
+              ">
+
+              @for (
+                step of [1, 2, 3, 4];
+                track step
+              ) {
+
+              <span
+                class="strength__step"
+                [class.is-on]="
+                  passwordStrength.score >= step
+                ">
+              </span>
+
+              }
+
+            </div>
+
+
+            <span class="strength__label">
+              {{ passwordStrength.label }}
+            </span>
+
+          </div>
+
+          }
+
+
+          @if (submitted && passwordError) {
+
+          <p
+            class="field-error"
+            id="signup-password-error"
+            role="alert">
+
+            {{ passwordError }}
+
+          </p>
+
+          }
+
+
+          <ion-item lines="none" class="field">
+
+            <ion-input
+
+              name="confirmPassword"
+
+              [type]="
+                passwordVisible
+                  ? 'text'
+                  : 'password'
+              "
+
+              autocomplete="new-password"
+
+              label="Confirm password"
+
+              labelPlacement="stacked"
+
+              placeholder="Repeat your password"
+
+              enterkeyhint="done"
+
+              [value]="confirmPassword"
+
+              [attr.aria-invalid]="
+                submitted && confirmError
+                  ? 'true'
+                  : null
+              "
+
+              [attr.aria-describedby]="
+                submitted && confirmError
+                  ? 'signup-confirm-error'
+                  : null
+              "
+
+              (ionInput)="
+                confirmPassword =
+                  $any($event).detail.value || ''
+              ">
+
+            </ion-input>
+
+          </ion-item>
+
+
+          @if (submitted && confirmError) {
+
+          <p
+            class="field-error"
+            id="signup-confirm-error"
+            role="alert">
+
+            {{ confirmError }}
+
+          </p>
+
+          }
+
+
+          <ion-button
+
+            expand="block"
+
+            type="submit"
+
+            class="auth-button"
+
+            [disabled]="isSubmitting">
+
+            @if (isSubmitting) {
+
+            <ion-spinner
+              name="crescent"
+              slot="start">
+            </ion-spinner>
+
+            }
+
+            {{
+              isSubmitting
+                ? 'Creating account…'
+                : 'Create account'
+            }}
+
+          </ion-button>
+
+
+        </form>
+
+
+        <footer class="auth-footer">
+
+          <span>Already have an account?</span>
+
+          <ion-button
+            fill="clear"
+            routerLink="/login">
+
+            Sign in
+
+          </ion-button>
+
+        </footer>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</ion-content>

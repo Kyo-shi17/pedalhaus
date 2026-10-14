@@ -1,0 +1,226 @@
+/* ===========================================================================
+   Profile — identity, snapshot and session management
+   =========================================================================== */
+
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  max-width: 760px;
+}
+
+/* Identity ---------------------------------------------------------------- */
+
+.identity-card {
+  position: relative;
+}
+
+.identity-card__banner {
+  height: 96px;
+
+  background:
+    radial-gradient(
+      120% 160% at 85% 0%,
+      rgba(242, 145, 27, .42),
+      transparent 60%
+    ),
+    linear-gradient(140deg, #22399c, #4b6ae6);
+}
+
+.identity-card__body {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  padding-top: 52px;
+}
+
+.identity-card__avatar {
+  position: absolute;
+  top: -38px;
+  left: 18px;
+
+  display: grid;
+  place-items: center;
+
+  width: 76px;
+  height: 76px;
+
+  border-radius: 22px;
+  border: 3px solid var(--ph-surface);
+  background: linear-gradient(140deg, var(--ph-brand), #5f7cf5);
+  color: #ffffff;
+
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: .02em;
+
+  box-shadow: var(--ph-shadow-sm);
+}
+
+.identity-card__name {
+  margin: 0 0 4px;
+
+  font-size: var(--ph-text-xl);
+  font-weight: 800;
+  letter-spacing: -.025em;
+  color: var(--ph-ink);
+}
+
+.identity-card__email {
+  margin: 0 0 12px;
+
+  font-size: var(--ph-text-base);
+  color: var(--ph-muted);
+  word-break: break-word;
+}
+
+.role-pill--admin {
+  background: var(--ph-brand-soft);
+  color: var(--ion-color-primary);
+}
+
+.identity-card__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.skeleton-line {
+  display: block;
+  height: 16px;
+}
+
+.skeleton-line--lg {
+  width: min(240px, 70%);
+  height: 26px;
+}
+
+.skeleton-line--sm {
+  width: min(180px, 55%);
+}
+
+.identity-card__error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.identity-card__error ion-icon {
+  font-size: 26px;
+  color: var(--ion-color-danger);
+}
+
+.identity-card__error p {
+  margin: 0;
+  font-size: var(--ph-text-base);
+  color: var(--ph-muted);
+}
+
+/* Snapshot ---------------------------------------------------------------- */
+
+.snapshot {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+}
+
+.snapshot__item .ph-card-body {
+  padding: 15px 16px;
+}
+
+/* Detail lists ------------------------------------------------------------ */
+
+.details-card__title {
+  margin: 0 0 14px;
+
+  font-size: var(--ph-text-md);
+  font-weight: 780;
+  letter-spacing: -.015em;
+  color: var(--ph-ink);
+}
+
+.details-list {
+  margin: 0 0 4px;
+  padding: 0;
+}
+
+.details-list__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+
+  padding: 13px 0;
+  border-bottom: 1px solid var(--ph-line);
+}
+
+.details-list__row:last-child {
+  border-bottom: 0;
+}
+
+.details-list dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  font-size: var(--ph-text-sm);
+  font-weight: 650;
+  color: var(--ph-muted);
+}
+
+.details-list dt ion-icon {
+  font-size: 17px;
+  color: var(--ph-muted);
+}
+
+.details-list dd {
+  margin: 0;
+
+  font-size: var(--ph-text-base);
+  font-weight: 650;
+  color: var(--ph-ink);
+  word-break: break-word;
+}
+
+.admin-link {
+  margin-top: 16px;
+}
+
+/* Session ----------------------------------------------------------------- */
+
+.session-card__copy {
+  margin: 0 0 16px;
+
+  font-size: var(--ph-text-base);
+  line-height: 1.55;
+  color: var(--ph-muted);
+}
+
+/* ===========================================================================
+   Responsive
+   =========================================================================== */
+
+@media (max-width: 480px) {
+  .identity-card__banner {
+    height: 82px;
+  }
+
+  .identity-card__avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    font-size: 22px;
+  }
+
+  .details-list__row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

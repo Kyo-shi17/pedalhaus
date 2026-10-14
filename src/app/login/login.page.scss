@@ -1,0 +1,274 @@
+/* ===========================================================================
+   Sign in — split panel on desktop, single column on mobile
+   =========================================================================== */
+
+ion-content {
+  --background: var(--ph-surface);
+}
+
+.auth-shell {
+  display: grid;
+  min-height: 100dvh;
+  grid-template-columns: 1fr;
+}
+
+/* Brand panel -------------------------------------------------------------- */
+
+.auth-aside {
+  position: relative;
+  display: none;
+  overflow: hidden;
+
+  padding: clamp(36px, 5vw, 64px);
+  color: #ffffff;
+
+  background:
+    radial-gradient(
+      120% 90% at 12% 8%,
+      rgba(242, 145, 27, .38),
+      transparent 58%
+    ),
+    linear-gradient(155deg, #22399c 0%, #2b4acb 46%, #4b6ae6 100%);
+}
+
+/* Subtle chainring motif, drawn rather than shipped as an image. */
+.auth-aside::after {
+  content: "";
+  position: absolute;
+  right: -140px;
+  bottom: -140px;
+
+  width: 420px;
+  height: 420px;
+
+  border-radius: 50%;
+  border: 46px solid rgba(255, 255, 255, .08);
+  box-shadow:
+    0 0 0 34px rgba(255, 255, 255, .05),
+    0 0 0 300px rgba(255, 255, 255, .04);
+
+  animation: chainring-spin 46s linear infinite;
+}
+
+@keyframes chainring-spin {
+  to { transform: rotate(360deg); }
+}
+
+.auth-aside__inner {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+
+  max-width: 46ch;
+  margin: auto 0;
+}
+
+.brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+
+  width: 44px;
+  height: 44px;
+
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .16);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22);
+
+  font-size: 23px;
+  color: #ffffff;
+}
+
+.brand-name {
+  font-size: var(--ph-text-md);
+  font-weight: 800;
+  letter-spacing: -.015em;
+}
+
+.auth-aside__headline {
+  margin: 0;
+
+  font-size: clamp(2rem, 1.4rem + 2.4vw, 3.1rem);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -.032em;
+  text-wrap: balance;
+}
+
+.auth-aside__copy {
+  margin: 0;
+
+  font-size: var(--ph-text-md);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, .82);
+}
+
+.auth-aside__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  margin: 6px 0 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+.auth-aside__list li {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  font-size: var(--ph-text-base);
+  color: rgba(255, 255, 255, .92);
+}
+
+.auth-aside__list ion-icon {
+  font-size: 19px;
+  color: #ffcf8a;
+}
+
+/* Form panel -------------------------------------------------------------- */
+
+.auth-panel {
+  display: grid;
+  place-items: center;
+
+  padding: 34px var(--ph-gutter) calc(34px + env(safe-area-inset-bottom));
+}
+
+.auth-card-surface {
+  width: 100%;
+  max-width: 424px;
+}
+
+.auth-header {
+  margin-bottom: 26px;
+}
+
+.brand-mark--compact {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 20px;
+
+  border-radius: 15px;
+  background: linear-gradient(140deg, var(--ph-brand), #5f7cf5);
+  color: #ffffff;
+
+  font-size: 25px;
+  box-shadow: var(--ph-shadow-sm);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  padding: 20px 18px 18px;
+
+  border: 1px solid var(--ph-line);
+  border-radius: var(--ph-radius-lg);
+  background: var(--ph-surface);
+  box-shadow: var(--ph-shadow-sm);
+}
+
+.field {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+
+  margin-bottom: 4px;
+
+  border: 1px solid var(--ph-line);
+  border-radius: var(--ph-radius-md);
+  background: var(--ph-surface-sunken);
+
+  transition:
+    border-color var(--ph-duration) var(--ph-ease),
+    box-shadow var(--ph-duration) var(--ph-ease);
+}
+
+.field:focus-within {
+  border-color: var(--ion-color-primary);
+  box-shadow: 0 0 0 3px var(--ph-brand-soft);
+}
+
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  margin: 0 0 10px;
+  padding-left: 10px;
+
+  font-size: var(--ph-text-sm);
+  font-weight: 600;
+  color: var(--ion-color-danger);
+}
+
+.field-error::before {
+  content: "";
+  flex: 0 0 auto;
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.reveal {
+  --padding-start: 6px;
+  --padding-end: 6px;
+  --color: var(--ph-muted);
+  margin-inline-end: 2px;
+}
+
+.auth-button {
+  margin-top: 16px;
+  --box-shadow: var(--ph-shadow-sm);
+}
+
+.auth-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  margin-top: 20px;
+
+  font-size: var(--ph-text-base);
+  color: var(--ph-muted);
+  text-align: center;
+}
+
+/* ===========================================================================
+   Breakpoints
+   =========================================================================== */
+
+@media (min-width: 900px) {
+  .auth-shell {
+    grid-template-columns: 1.05fr .95fr;
+  }
+
+  .auth-aside {
+    display: block;
+  }
+
+  .brand-mark--compact {
+    display: none;
+  }
+
+  .auth-panel {
+    padding: 48px 40px;
+  }
+}

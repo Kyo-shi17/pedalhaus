@@ -1,0 +1,769 @@
+<app-shell
+  section="admin"
+  [userName]="profile?.name || ''"
+  [userRole]="profile?.role || 'user'"
+  (reload)="refreshList()">
+
+
+  <ion-content [fullscreen]="true">
+
+
+    <ion-refresher
+      slot="fixed"
+      (ionRefresh)="refresh($event)">
+
+      <ion-refresher-content
+        pullingText="Pull to refresh"
+        refreshingSpinner="crescent"
+        refreshingText="Refreshing the shop…">
+      </ion-refresher-content>
+
+    </ion-refresher>
+
+
+    <div class="ph-page admin-page">
+
+
+      <!-- ============ Heading ============ -->
+
+      <header class="page-heading">
+
+        <div>
+
+          <span class="ph-eyebrow">
+            Admin
+          </span>
+
+
+          <h1 class="ph-title">
+            Shop overview
+          </h1>
+
+
+          <p class="ph-subtitle">
+
+            Every bike listed by every member of the shop, in one
+            place.
+
+          </p>
+
+        </div>
+
+
+        <span class="ph-pill admin-badge">
+
+          <ion-icon
+            name="shield-checkmark-outline"
+            aria-hidden="true">
+          </ion-icon>
+
+          Administrator
+
+        </span>
+
+      </header>
+
+
+      <!-- ============ Loading ============ -->
+
+      @if (isLoading) {
+
+      <div
+        class="ph-grid-cards skeleton-grid"
+        aria-hidden="true">
+
+        @for (row of [1, 2, 3, 4]; track row) {
+
+        <div class="ph-skeleton skeleton-stat"></div>
+
+        }
+
+      </div>
+
+      <span class="visually-hidden" role="status">
+        Loading the shop inventory
+      </span>
+
+      }
+
+
+      <!-- ============ Failure ============ -->
+
+      @else if (loadError) {
+
+      <div class="ph-surface error-card" role="alert">
+
+        <div class="ph-card-body">
+
+          <ion-icon
+            name="cloud-offline-outline"
+            aria-hidden="true">
+          </ion-icon>
+
+
+          <h2>
+            We couldn't load the shop
+          </h2>
+
+
+          <p>{{ loadError }}</p>
+
+
+          <ion-button
+            fill="outline"
+            (click)="refreshList()">
+
+            <ion-icon
+              slot="start"
+              name="refresh-outline">
+            </ion-icon>
+
+            Try again
+
+          </ion-button>
+
+        </div>
+
+      </div>
+
+      }
+
+
+      <!-- ============ Statistics ============ -->
+
+      @else {
+
+      <section
+        class="ph-grid-cards stats-grid"
+        aria-label="Shop statistics">
+
+
+        <article class="ph-surface stat-card">
+
+          <div class="ph-card-body ph-stat">
+
+            <span class="ph-stat__icon" aria-hidden="true">
+
+              <ion-icon name="bicycle-outline"></ion-icon>
+
+            </span>
+
+
+            <span>
+
+              <span class="ph-stat__label">
+                Bikes listed
+              </span>
+
+              <strong class="ph-stat__value">
+                {{ bikes.length }}
+              </strong>
+
+            </span>
+
+          </div>
+
+        </article>
+
+
+        <article class="ph-surface stat-card">
+
+          <div class="ph-card-body ph-stat">
+
+            <span
+              class="ph-stat__icon stat-icon--success"
+              aria-hidden="true">
+
+              <ion-icon
+                name="checkmark-circle-outline">
+              </ion-icon>
+
+            </span>
+
+
+            <span>
+
+              <span class="ph-stat__label">
+                Available
+              </span>
+
+              <strong class="ph-stat__value">
+                {{ countByStatus('available') }}
+              </strong>
+
+            </span>
+
+          </div>
+
+        </article>
+
+
+        <article class="ph-surface stat-card">
+
+          <div class="ph-card-body ph-stat">
+
+            <span
+              class="ph-stat__icon stat-icon--warning"
+              aria-hidden="true">
+
+              <ion-icon name="time-outline"></ion-icon>
+
+            </span>
+
+
+            <span>
+
+              <span class="ph-stat__label">
+                Reserved
+              </span>
+
+              <strong class="ph-stat__value">
+                {{ countByStatus('reserved') }}
+              </strong>
+
+            </span>
+
+          </div>
+
+        </article>
+
+
+        <article class="ph-surface stat-card">
+
+          <div class="ph-card-body ph-stat">
+
+            <span
+              class="ph-stat__icon stat-icon--danger"
+              aria-hidden="true">
+
+              <ion-icon name="cash-outline"></ion-icon>
+
+            </span>
+
+
+            <span>
+
+              <span class="ph-stat__label">
+                Sold
+              </span>
+
+              <strong class="ph-stat__value">
+                {{ countByStatus('sold') }}
+              </strong>
+
+            </span>
+
+          </div>
+
+        </article>
+
+
+      </section>
+
+
+      <!-- ============ Value + sell-through ============ -->
+
+      @if (bikes.length) {
+
+      <section class="ph-surface value-card">
+
+        <div class="ph-card-body">
+
+          <div class="value-card__top">
+
+            <span>
+
+              <span class="ph-label">
+                Total floor value
+              </span>
+
+              <strong class="value-card__amount">
+                {{ inventoryValue | money }}
+              </strong>
+
+            </span>
+
+
+            <span class="ph-pill ph-pill--available">
+
+              <ion-icon
+                name="cube-outline"
+                aria-hidden="true">
+              </ion-icon>
+
+              {{ totalStock }} units in stock
+
+            </span>
+
+          </div>
+
+
+          <div class="value-card__meter">
+
+            <span class="ph-label">
+              Sell-through rate
+            </span>
+
+
+            <ion-progress-bar
+              [value]="soldRate / 100"
+              [attr.aria-label]="
+                soldRate + '% of listed bikes sold'
+              ">
+            </ion-progress-bar>
+
+
+            <span class="value-card__percent">
+              {{ soldRate }}%
+            </span>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      }
+
+
+      <!-- ============ Search + filter ============ -->
+
+      <section
+        class="filter-bar"
+        aria-label="Filter shop inventory">
+
+
+        <ion-searchbar
+
+          class="filter-search"
+
+          placeholder="Search by bike, brand, owner or spec"
+
+          inputmode="search"
+
+          enterkeyhint="search"
+
+          [debounce]="200"
+
+          [value]="searchText"
+
+          (ionInput)="onSearch($event)">
+
+        </ion-searchbar>
+
+
+        <ion-segment
+
+          class="filter-segment"
+
+          scrollable="false"
+
+          [value]="selectedFilter"
+
+          (ionChange)="
+            onFilterChange(
+              $any($event).detail.value
+            )
+          ">
+
+
+          @for (option of filters; track option.value) {
+
+          <ion-segment-button [value]="option.value">
+
+            <ion-label>
+              {{ option.label }}
+            </ion-label>
+
+
+            @if (option.value !== 'all') {
+
+            <ion-badge class="segment-count">
+
+              {{ countByStatus($any(option.value)) }}
+
+            </ion-badge>
+
+            }
+
+
+          </ion-segment-button>
+
+          }
+
+
+        </ion-segment>
+
+      </section>
+
+
+      <!-- ============ Results header ============ -->
+
+      <div class="results-header">
+
+        <div>
+
+          <h2>
+            Bikes
+          </h2>
+
+
+          <p role="status">
+
+            Showing {{ filteredBikes.length }} of
+            {{ bikes.length }}
+
+          </p>
+
+        </div>
+
+
+        @if (hasActiveFilters) {
+
+        <ion-button
+          size="small"
+          fill="clear"
+          (click)="clearFilters()">
+
+          Clear filters
+
+        </ion-button>
+
+        }
+
+      </div>
+
+
+      <!-- ============ Inventory ============ -->
+
+      @if (filteredBikes.length) {
+
+      <ul class="admin-list" role="list">
+
+        @for (
+          bike of filteredBikes;
+          track trackByBikeId($index, bike)
+        ) {
+
+        <li class="ph-surface admin-card">
+
+          <div class="ph-card-body">
+
+            <div class="admin-card__top">
+
+              <div
+                class="admin-card__media"
+                aria-hidden="true">
+
+                @if (bike.photo) {
+
+                <img
+                  [src]="bike.photo"
+                  [alt]="bike.brand + ' ' + bike.name"
+                  loading="lazy">
+
+                }
+
+                @else {
+
+                <ion-icon name="bicycle-outline"></ion-icon>
+
+                }
+
+              </div>
+
+
+              <div class="admin-card__heading">
+
+                <h3>{{ bike.name }}</h3>
+
+
+                <p>
+                  {{ bike.brand }} &middot; {{ bike.year }}
+                </p>
+
+
+                @if (bike.description) {
+
+                <p class="admin-card__description">
+
+                  {{ bike.description }}
+
+                </p>
+
+                }
+
+              </div>
+
+
+              <span
+                class="ph-pill admin-card__status"
+                [class.ph-pill--available]="
+                  bike.status === 'available'
+                "
+                [class.ph-pill--reserved]="
+                  bike.status === 'reserved'
+                "
+                [class.ph-pill--sold]="
+                  bike.status === 'sold'
+                ">
+
+                <span class="ph-pill__dot"></span>
+
+                {{ statusLabel(bike.status) }}
+
+              </span>
+
+            </div>
+
+
+            <dl class="admin-card__facts">
+
+              <div>
+
+                <dt>Price</dt>
+
+                <dd>{{ bike.price | money }}</dd>
+
+              </div>
+
+
+              <div>
+
+                <dt>Stock</dt>
+
+                <dd>{{ bike.stock }}</dd>
+
+              </div>
+
+
+              <div>
+
+                <dt>Category</dt>
+
+                <dd>{{ bike.category | bikeLabel }}</dd>
+
+              </div>
+
+
+              <div>
+
+                <dt>Condition</dt>
+
+                <dd>{{ bike.condition | bikeLabel }}</dd>
+
+              </div>
+
+
+              <div>
+
+                <dt>Listed by</dt>
+
+                <dd>{{ bike.ownerName }}</dd>
+
+              </div>
+
+            </dl>
+
+
+            <div class="admin-card__actions">
+
+              <label
+                class="admin-card__status-control"
+                [attr.for]="'status-' + bike.id">
+
+                <span class="ph-label">
+                  Change status
+                </span>
+
+
+                <ion-select
+
+                  [id]="'status-' + bike.id"
+
+                  fill="outline"
+
+                  interface="popover"
+
+                  [value]="bike.status"
+
+                  [attr.aria-label]="
+                    'Status for ' + bike.name
+                  "
+
+                  (ionChange)="
+                    changeStatus(
+                      bike,
+                      $any($event).detail.value
+                    )
+                  ">
+
+
+                  <ion-select-option value="available">
+                    Available
+                  </ion-select-option>
+
+                  <ion-select-option value="reserved">
+                    Reserved
+                  </ion-select-option>
+
+                  <ion-select-option value="sold">
+                    Sold
+                  </ion-select-option>
+
+
+                </ion-select>
+
+              </label>
+
+
+              <ion-button
+                fill="clear"
+                color="danger"
+                [attr.aria-label]="'Delete ' + bike.name"
+                (click)="deleteBike(bike)">
+
+                <ion-icon
+                  slot="start"
+                  name="trash-outline">
+                </ion-icon>
+
+                Delete
+
+              </ion-button>
+
+            </div>
+
+          </div>
+
+        </li>
+
+        }
+
+      </ul>
+
+      }
+
+      @else {
+
+      <div class="ph-empty">
+
+        <ion-icon
+          name="bicycle-outline"
+          aria-hidden="true">
+        </ion-icon>
+
+
+        <h2>
+
+          {{
+            hasActiveFilters
+              ? 'Nothing matches those filters'
+              : 'The shop is empty'
+          }}
+
+        </h2>
+
+
+        <p>
+
+          {{
+            hasActiveFilters
+              ? 'Try another search term, or clear the filters to see the whole shop.'
+              : 'Once members list bikes they will appear here.'
+          }}
+
+        </p>
+
+
+        @if (hasActiveFilters) {
+
+        <ion-button fill="outline" (click)="clearFilters()">
+
+          Clear filters
+
+        </ion-button>
+
+        }
+
+      </div>
+
+      }
+
+
+      <!-- ============ Category breakdown ============ -->
+
+      @if (bikes.length) {
+
+      <section
+        class="ph-surface breakdown-card"
+        aria-labelledby="breakdown-title">
+
+        <div class="ph-card-body">
+
+          <h2
+            class="breakdown-card__title"
+            id="breakdown-title">
+
+            Bikes by category
+
+          </h2>
+
+
+          <ul class="breakdown-list">
+
+            @for (
+              entry of categoryTotals;
+              track entry.label
+            ) {
+
+            <li class="breakdown-list__row">
+
+              <span class="breakdown-list__label">
+
+                {{ entry.label | bikeLabel }}
+
+              </span>
+
+
+              <span
+                class="breakdown-list__bar"
+                aria-hidden="true">
+
+                <span
+                  class="breakdown-list__fill"
+                  [style.width.%]="
+                    bikes.length
+                      ? (entry.count / bikes.length) * 100
+                      : 0
+                  ">
+                </span>
+
+              </span>
+
+
+              <span class="breakdown-list__count">
+
+                {{ entry.count }}
+
+              </span>
+
+            </li>
+
+            }
+
+          </ul>
+
+        </div>
+
+      </section>
+
+      }
+
+      }
+
+    </div>
+
+  </ion-content>
+
+</app-shell>

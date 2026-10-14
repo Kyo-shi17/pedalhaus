@@ -1,0 +1,452 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+/* ===========================================================================
+   1. Document baseline
+   =========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--ph-font);
+  background: var(--ph-surface-sunken);
+  color: var(--ph-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+ion-content {
+  --background: var(--ph-surface-sunken);
+}
+
+/* Visible focus for keyboard users only — never for mouse/touch. */
+:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect the user's motion preference everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===========================================================================
+   2. Accessibility helpers
+   =========================================================================== */
+
+.visually-hidden,
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ===========================================================================
+   3. Layout primitives
+   =========================================================================== */
+
+.ph-page {
+  width: 100%;
+  max-width: var(--ph-content-max);
+  margin: 0 auto;
+  padding: 26px var(--ph-gutter) 110px;
+}
+
+.ph-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ph-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ph-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Responsive auto grid: 1 → 2 → 4 columns without media queries. */
+.ph-grid-cards {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+
+/* ===========================================================================
+   4. Type helpers
+   =========================================================================== */
+
+.ph-eyebrow {
+  display: block;
+  font-size: var(--ph-text-xs);
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ion-color-primary);
+}
+
+.ph-title {
+  margin: 8px 0 6px;
+  font-size: clamp(1.6rem, 1.2rem + 1.6vw, var(--ph-text-2xl));
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  color: var(--ph-ink);
+}
+
+.ph-subtitle {
+  margin: 0;
+  max-width: 62ch;
+  font-size: var(--ph-text-base);
+  line-height: 1.55;
+  color: var(--ph-muted);
+}
+
+.ph-label {
+  display: block;
+  font-size: var(--ph-text-xs);
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--ph-muted);
+}
+
+/* ===========================================================================
+   5. Surfaces (cards)
+   =========================================================================== */
+
+.ph-surface {
+  --background: var(--ph-surface);
+  margin: 0;
+  border: 1px solid var(--ph-line);
+  border-radius: var(--ph-radius-lg);
+  box-shadow: var(--ph-shadow-sm);
+  background: var(--ph-surface);
+  overflow: hidden;
+}
+
+.ph-surface::part(native) {
+  border-radius: var(--ph-radius-lg);
+}
+
+/* ===========================================================================
+   6. Ionic component restyling
+   =========================================================================== */
+
+ion-toolbar {
+  --background: var(--ph-surface);
+  --border-color: transparent;
+  --min-height: 60px;
+}
+
+ion-title {
+  font-weight: 750;
+  letter-spacing: -.01em;
+}
+
+ion-button {
+  --border-radius: var(--ph-radius-sm);
+  text-transform: none;
+  font-weight: 650;
+  letter-spacing: .005em;
+}
+
+ion-button[expand="block"] {
+  --border-radius: var(--ph-radius-md);
+  min-height: 48px;
+}
+
+ion-card {
+  border-radius: var(--ph-radius-lg);
+}
+
+ion-searchbar {
+  --background: var(--ph-surface);
+  --border-radius: var(--ph-radius-md);
+  --box-shadow: none;
+  --color: var(--ph-ink);
+  --placeholder-color: var(--ph-muted);
+  padding: 0;
+}
+
+ion-item {
+  --background: transparent;
+  --color: var(--ph-ink);
+  --border-color: var(--ph-line);
+}
+
+ion-input,
+ion-textarea,
+ion-select {
+  --color: var(--ph-ink);
+  --placeholder-color: var(--ph-muted);
+  --highlight-color-focused: var(--ion-color-primary);
+  --highlight-color-invalid: var(--ion-color-danger);
+}
+
+ion-chip {
+  --background: var(--ph-surface-sunken);
+  border-radius: var(--ph-radius-pill);
+  font-weight: 650;
+  letter-spacing: .01em;
+}
+
+ion-progress-bar {
+  height: 8px;
+  border-radius: var(--ph-radius-pill);
+  --background: var(--ph-line);
+  --progress-background: var(--ion-color-primary);
+  overflow: hidden;
+}
+
+ion-segment {
+  --background: var(--ph-surface-sunken);
+  border-radius: var(--ph-radius-md);
+  padding: 4px;
+}
+
+ion-segment-button {
+  --indicator-color: transparent;
+  --color: var(--ph-muted-strong);
+  --color-checked: var(--ion-color-primary-contrast);
+  --border-radius: var(--ph-radius-sm);
+  min-height: 40px;
+  font-weight: 650;
+  letter-spacing: .01em;
+  text-transform: none;
+}
+
+/* The sliding pill indicator doubles as the selected background. */
+ion-segment-button::part(indicator-background) {
+  background: var(--ion-color-primary);
+}
+
+ion-toast {
+  --border-radius: var(--ph-radius-sm);
+  --box-shadow: var(--ph-shadow-md);
+}
+
+ion-modal {
+  --border-radius: var(--ph-radius-lg);
+}
+
+/* ===========================================================================
+   7. Shared card/markup helpers
+   =========================================================================== */
+
+.ph-card-body {
+  padding: 18px;
+}
+
+.ph-divider {
+  height: 1px;
+  margin: 16px 0;
+  background: var(--ph-line);
+  border: 0;
+}
+
+.ph-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.ph-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ph-stat__icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ph-radius-sm);
+  font-size: 21px;
+  background: var(--ph-brand-soft);
+  color: var(--ion-color-primary);
+}
+
+.ph-stat__value {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--ph-text-xl);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em;
+  color: var(--ph-ink);
+}
+
+.ph-stat__label {
+  display: block;
+  font-size: var(--ph-text-sm);
+  color: var(--ph-muted);
+}
+
+/* Status pills ------------------------------------------------------------ */
+
+.ph-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--ph-radius-pill);
+  font-size: var(--ph-text-xs);
+  font-weight: 700;
+  line-height: 1.6;
+  background: var(--ph-surface-sunken);
+  color: var(--ph-ink-soft);
+}
+
+.ph-pill__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ph-pill--available {
+  background: var(--ph-success-soft);
+  color: var(--ph-success);
+}
+
+.ph-pill--reserved {
+  background: var(--ph-warning-soft);
+  color: var(--ph-warning);
+}
+
+.ph-pill--sold {
+  background: var(--ph-danger-soft);
+  color: var(--ph-danger);
+}
+
+@media (prefers-color-scheme: dark) {
+  .ph-pill--available { color: #6fdfa6; }
+  .ph-pill--reserved  { color: #ffc46b; }
+  .ph-pill--sold      { color: #ffa6a6; }
+}
+
+/* Empty states ------------------------------------------------------------ */
+
+.ph-empty {
+  padding: 56px 20px;
+  text-align: center;
+}
+
+.ph-empty ion-icon {
+  font-size: 44px;
+  color: var(--ion-color-primary);
+}
+
+.ph-empty h2 {
+  margin: 14px 0 6px;
+  font-size: var(--ph-text-lg);
+  font-weight: 750;
+  color: var(--ph-ink);
+}
+
+.ph-empty p {
+  max-width: 42ch;
+  margin: 0 auto 18px;
+  font-size: var(--ph-text-base);
+  line-height: 1.55;
+  color: var(--ph-muted);
+}
+
+/* Skeleton shimmer -------------------------------------------------------- */
+
+@keyframes ph-shimmer {
+  from { background-position: 180% 0; }
+  to   { background-position: -80% 0; }
+}
+
+.ph-skeleton {
+  border-radius: var(--ph-radius-md);
+  background-image: linear-gradient(
+    90deg,
+    var(--ph-line) 0%,
+    var(--ph-surface) 45%,
+    var(--ph-line) 90%
+  );
+  background-size: 220% 100%;
+  animation: ph-shimmer 1.4s linear infinite;
+}
+
+/* ===========================================================================
+   8. Responsive
+   =========================================================================== */
+
+@media (max-width: 640px) {
+  :root {
+    --ph-gutter: 14px;
+  }
+
+  .ph-page {
+    padding-top: 18px;
+  }
+
+  .ph-card-body {
+    padding: 15px;
+  }
+}

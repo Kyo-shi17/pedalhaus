@@ -1,0 +1,190 @@
+<!-- Skip link: first focusable element on every authenticated page -->
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<!-- =====================================================================
+     Desktop / tablet lateral navigation
+     ===================================================================== -->
+<nav class="sidebar" aria-label="Primary">
+  <div class="sidebar__brand">
+    <span class="brand-mark" aria-hidden="true">
+      <ion-icon name="bicycle"></ion-icon>
+    </span>
+
+    <span class="brand-copy">
+      <strong>Pedalhaus</strong>
+      <small>Bike shop manager</small>
+    </span>
+  </div>
+
+  <ul class="sidebar__nav">
+    <li>
+      <button
+        type="button"
+        class="nav-link"
+        [class.is-active]="section() === 'inventory'"
+        [attr.aria-current]="section() === 'inventory' ? 'page' : null"
+        (click)="navigateTo('/tabs/tab1')">
+        <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
+        <span>Inventory</span>
+      </button>
+    </li>
+
+    <li>
+      <button
+        type="button"
+        class="nav-link"
+        [class.is-active]="section() === 'profile'"
+        [attr.aria-current]="section() === 'profile' ? 'page' : null"
+        (click)="navigateTo('/tabs/tab2')">
+        <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+        <span>Profile</span>
+      </button>
+    </li>
+
+    @if (isAdmin) {
+    <li>
+      <button
+        type="button"
+        class="nav-link"
+        [class.is-active]="section() === 'admin'"
+        [attr.aria-current]="section() === 'admin' ? 'page' : null"
+        (click)="navigateTo('/admin-dashboard')">
+        <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
+        <span>Admin dashboard</span>
+      </button>
+    </li>
+    }
+  </ul>
+
+  <div class="sidebar__footer">
+    <div class="account">
+      <span class="account__avatar" aria-hidden="true">{{ initials }}</span>
+
+      <span class="account__copy">
+        <strong>{{ userName() || 'Signed in' }}</strong>
+        <small>{{ userRole() === 'admin' ? 'Administrator' : 'Shop member' }}</small>
+      </span>
+    </div>
+
+    <button
+      type="button"
+      class="nav-link nav-link--quiet"
+      (click)="onReload()">
+      <ion-icon name="refresh-outline" aria-hidden="true"></ion-icon>
+      <span>Refresh data</span>
+    </button>
+
+    <button
+      type="button"
+      class="nav-link nav-link--danger"
+      (click)="signOut()">
+      <ion-icon name="log-out-outline" aria-hidden="true"></ion-icon>
+      <span>Sign out</span>
+    </button>
+  </div>
+</nav>
+
+<!-- =====================================================================
+     Mobile header
+     ===================================================================== -->
+<header class="mobile-bar">
+  <div class="mobile-bar__brand">
+    <span class="brand-mark brand-mark--sm" aria-hidden="true">
+      <ion-icon name="bicycle"></ion-icon>
+    </span>
+
+    <span class="brand-copy">
+      <strong>Pedalhaus</strong>
+      <small>{{ userRole() === 'admin' ? 'Administrator' : 'Shop member' }}</small>
+    </span>
+  </div>
+
+  <div class="mobile-bar__actions">
+    <ion-button
+      fill="clear"
+      size="small"
+      aria-label="Refresh data"
+      (click)="onReload()">
+      <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+    </ion-button>
+
+    <ion-button
+      fill="clear"
+      size="small"
+      id="shell-overflow-trigger"
+      aria-label="More options">
+      <ion-icon slot="icon-only" name="ellipsis-horizontal"></ion-icon>
+    </ion-button>
+
+    <ion-popover
+      trigger="shell-overflow-trigger"
+      triggerAction="click"
+      [dismissOnSelect]="true"
+      side="bottom"
+      alignment="end">
+      <ion-content class="overflow-menu">
+        <ion-list lines="none">
+          <ion-item button="true" (click)="navigateTo('/tabs/tab1')">
+            <ion-icon slot="start" name="grid-outline"></ion-icon>
+            <ion-label>Inventory</ion-label>
+          </ion-item>
+
+          <ion-item button="true" (click)="navigateTo('/tabs/tab2')">
+            <ion-icon slot="start" name="person-outline"></ion-icon>
+            <ion-label>Profile</ion-label>
+          </ion-item>
+
+          @if (isAdmin) {
+          <ion-item button="true" (click)="navigateTo('/admin-dashboard')">
+            <ion-icon slot="start" name="shield-checkmark-outline"></ion-icon>
+            <ion-label>Admin dashboard</ion-label>
+          </ion-item>
+          }
+
+          <ion-item button="true" (click)="onReload()">
+            <ion-icon slot="start" name="refresh-outline"></ion-icon>
+            <ion-label>Refresh data</ion-label>
+          </ion-item>
+
+          <ion-item button="true" lines="none" (click)="signOut()">
+            <ion-icon slot="start" name="log-out-outline" color="danger"></ion-icon>
+            <ion-label color="danger">Sign out</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-popover>
+  </div>
+</header>
+
+<!-- =====================================================================
+     Page content
+     ===================================================================== -->
+<div class="shell-main" id="main-content" tabindex="-1">
+  <ng-content></ng-content>
+</div>
+
+<!-- =====================================================================
+     Mobile bottom navigation (real links + swipeable Ionic tabs)
+     ===================================================================== -->
+<nav class="tab-dock" aria-label="Primary">
+  <ion-tabs>
+    <ion-tab-bar slot="bottom">
+      <ion-tab-button tab="tab1" href="/tabs/tab1">
+        <ion-icon name="grid-outline" aria-hidden="true"></ion-icon>
+        <ion-label>Inventory</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button tab="tab2" href="/tabs/tab2">
+        <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
+        <ion-label>Profile</ion-label>
+      </ion-tab-button>
+
+      @if (isAdmin) {
+      <ion-tab-button tab="admin" href="/admin-dashboard">
+        <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
+        <ion-label>Admin</ion-label>
+      </ion-tab-button>
+      }
+    </ion-tab-bar>
+  </ion-tabs>
+</nav>
