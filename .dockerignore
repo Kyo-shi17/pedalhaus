@@ -1,0 +1,11 @@
+node_modules
+.git
+.angular
+dist
+www
+coverage
+.env
+*.log
+Dockerfile
+docker-compose.yml
+docker-compose.yaml

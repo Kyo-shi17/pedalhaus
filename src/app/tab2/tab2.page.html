@@ -1,358 +1,99 @@
-<app-shell
-  section="profile"
-  [userName]="profile?.name || ''"
-  [userRole]="profile?.role || 'user'"
-  (reload)="refreshProfile()">
-
-
-  <ion-content [fullscreen]="true">
-
-
-    <ion-refresher
-      slot="fixed"
-      (ionRefresh)="refresh($event)">
-
-      <ion-refresher-content
-        pullingText="Pull to refresh"
-        refreshingSpinner="crescent"
-        refreshingText="Refreshing…">
-      </ion-refresher-content>
-
-    </ion-refresher>
-
-
-    <div class="ph-page profile-page">
-
-
-      <!-- ============ Identity card ============ -->
-
-      <section class="ph-surface identity-card">
-
-        <div class="identity-card__banner" aria-hidden="true"></div>
-
-
-        <div class="ph-card-body identity-card__body">
-
-          <span class="identity-card__avatar" aria-hidden="true">
-
-            {{
-              initials ||
-              (isLoading ? '…' : '?')
-            }}
-
-          </span>
-
-
-          @if (isLoading) {
-
-          <div class="identity-card__skeleton" aria-hidden="true">
-
-            <span class="ph-skeleton skeleton-line skeleton-line--lg">
-            </span>
-
-            <span class="ph-skeleton skeleton-line skeleton-line--sm">
-            </span>
-
-          </div>
-
-          <span class="visually-hidden" role="status">
-            Loading your profile
-          </span>
-
-          }
-
-          @else if (loadError) {
-
-          <div role="alert" class="identity-card__error">
-
-            <ion-icon
-              name="alert-circle-outline"
-              aria-hidden="true">
-            </ion-icon>
-
-            <p>{{ loadError }}</p>
-
-
-            <ion-button
-              size="small"
-              fill="outline"
-              (click)="refreshProfile()">
-
-              Try again
-
-            </ion-button>
-
-          </div>
-
-          }
-
-          @else {
-
-          <h1 class="identity-card__name">
-            {{ profile?.name }}
-          </h1>
-
-
-          <p class="identity-card__email">
-            {{ profile?.email }}
-          </p>
-
-
-          <span
-            class="ph-pill"
-            [class.role-pill--admin]="isAdmin">
-
-            <ion-icon
-              [name]="
-                isAdmin
-                  ? 'shield-checkmark-outline'
-                  : 'person-outline'
-              "
-              aria-hidden="true">
-            </ion-icon>
-
-
-            {{
-              isAdmin
-                ? 'Administrator'
-                : 'Shop member'
-            }}
-
-          </span>
-
-          }
-
-        </div>
-
-      </section>
-
-
-      <!-- ============ Snapshot ============ -->
-
-      @if (!isLoading && !loadError) {
-
-      <section
-        class="snapshot"
-        aria-label="Your inventory at a glance">
-
-
-        <article class="ph-surface snapshot__item">
-
-          <div class="ph-card-body">
-
-            <span class="ph-stat__label">
-              Bikes listed
-            </span>
-
-            <strong class="ph-stat__value">
-              {{ snapshot.listed }}
-            </strong>
-
-          </div>
-
-        </article>
-
-
-        <article class="ph-surface snapshot__item">
-
-          <div class="ph-card-body">
-
-            <span class="ph-stat__label">
-              Available
-            </span>
-
-            <strong class="ph-stat__value">
-              {{ snapshot.available }}
-            </strong>
-
-          </div>
-
-        </article>
-
-
-        <article class="ph-surface snapshot__item">
-
-          <div class="ph-card-body">
-
-            <span class="ph-stat__label">
-              Reserved
-            </span>
-
-            <strong class="ph-stat__value">
-              {{ snapshot.reserved }}
-            </strong>
-
-          </div>
-
-        </article>
-
-
-        <article class="ph-surface snapshot__item">
-
-          <div class="ph-card-body">
-
-            <span class="ph-stat__label">
-              Units in stock
-            </span>
-
-            <strong class="ph-stat__value">
-              {{ snapshot.totalStock }}
-            </strong>
-
-          </div>
-
-        </article>
-
-
-      </section>
-
-      }
-
-
-      <!-- ============ Account details ============ -->
-
-      <section
-        class="ph-surface details-card"
-        aria-labelledby="account-details-title">
-
-        <div class="ph-card-body">
-
-          <h2
-            class="details-card__title"
-            id="account-details-title">
-
-            Account details
-
-          </h2>
-
-
-          <dl class="details-list">
-
-            <div class="details-list__row">
-
-              <dt>
-                <ion-icon
-                  name="person-outline"
-                  aria-hidden="true">
-                </ion-icon>
-
-                Name
-
-              </dt>
-
-              <dd>{{ profile?.name || '—' }}</dd>
-
-            </div>
-
-
-            <div class="details-list__row">
-
-              <dt>
-                <ion-icon
-                  name="mail-outline"
-                  aria-hidden="true">
-                </ion-icon>
-
-                Email
-
-              </dt>
-
-              <dd>{{ profile?.email || '—' }}</dd>
-
-            </div>
-
-
-            <div class="details-list__row">
-
-              <dt>
-                <ion-icon
-                  name="shield-checkmark-outline"
-                  aria-hidden="true">
-                </ion-icon>
-
-                Access level
-
-              </dt>
-
-              <dd>
-
-                {{
-                  isAdmin
-                    ? 'Administrator'
-                    : 'Shop member'
-                }}
-
-              </dd>
-
-            </div>
-
-          </dl>
-
-
-          @if (isAdmin) {
-
-          <ion-button
-            expand="block"
-            fill="outline"
-            class="admin-link"
-            href="/admin-dashboard">
-
-            <ion-icon
-              slot="start"
-              name="shield-checkmark-outline">
-            </ion-icon>
-
-            Open the admin dashboard
-
-          </ion-button>
-
-          }
-
-        </div>
-
-      </section>
-
-
-      <!-- ============ Session ============ -->
-
-      <section class="ph-surface session-card">
-
-        <div class="ph-card-body">
-
-          <h2 class="details-card__title">
-            Session
-          </h2>
-
-
-          <p class="session-card__copy">
-            You are signed in on this device. Signing out clears
-            the session but keeps your inventory untouched.
-          </p>
-
-
-          <ion-button
-            expand="block"
-            fill="outline"
-            color="danger"
-            [disabled]="isSigningOut"
-            (click)="signOut()">
-
-            <ion-icon
-              slot="start"
-              name="log-out-outline">
-            </ion-icon>
-
-            {{ isSigningOut ? 'Signing out…' : 'Sign out' }}
-
-          </ion-button>
-
-        </div>
-
-      </section>
-
-
+<main class="page inventory-page">
+  <header class="intro reveal">
+    <div>
+      <p class="eyebrow">Workspace / Inventory</p>
+      <h1>Your bike <span>lineup.</span></h1>
+      <p>Every ride, ready for its next adventure.</p>
     </div>
+    <a class="add-link" routerLink="/add">+ Add bike</a>
+  </header>
 
-  </ion-content>
+  <section class="stats reveal delay-1">
+    <div class="stat">
+      <span class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"></path></svg></span>
+      <span><strong>{{ bikes.length }}</strong><small>Total bikes</small></span><i class="stat-pulse"></i>
+    </div>
+    <div class="stat">
+      <span class="stat-icon green" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"></path><circle cx="12" cy="12" r="9"></circle></svg></span>
+      <span><strong>{{ availableCount }}</strong><small>Available</small></span><i class="stat-pulse"></i>
+    </div>
+    <div class="stat">
+      <span class="stat-icon orange" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 6h14v14H5zM8 3v6M16 3v6M8 13h8M8 17h5"></path></svg></span>
+      <span><strong>{{ totalStock }}</strong><small>Units in stock</small></span><i class="stat-pulse"></i>
+    </div>
+  </section>
 
-</app-shell>
+  @if (errorMessage) { <p class="message error reveal" role="alert">{{ errorMessage }}</p> }
+  @if (successMessage) { <p class="message success reveal" role="status">{{ successMessage }}</p> }
+  @if (errorMessage) {
+    <button type="button" (click)="loadBikes()">Try again</button>
+  }
+  @if (isLoading) {
+    <div class="loading-card"><span class="spinner"></span><p>Syncing your inventory...</p></div>
+  }
+  @else if (!bikes.length) {
+    <div class="empty-card"><span class="empty-icon">[]</span><h2>Your lineup is waiting.</h2><p>Add your first bike to see it here.</p><a class="add-link" routerLink="/add">Add first bike</a></div>
+  }
+  @else {
+    <div class="inventory">
+      @for (bike of bikes; track bike.id) {
+        <article class="bike reveal" [style.animation-delay]="$index * 70 + 'ms'">
+          <div class="bike-accent"></div>
+          <span class="outline-beam" aria-hidden="true"></span>
+          <span class="three-spoke-light" aria-hidden="true"><i></i><i></i><i></i></span>
+          @if (editingId === bike.id) {
+          } @else {
+            @if (bike.photo) {
+              <div class="bike-photo-frame">
+                <img class="bike-photo" [src]="bike.photo" [alt]="bike.name" loading="lazy">
+                <span class="image-scanline" aria-hidden="true"></span>
+                <span class="image-corner corner-top-left" aria-hidden="true"></span>
+                <span class="image-corner corner-bottom-right" aria-hidden="true"></span>
+              </div>
+            }
+            <div class="bike-info">
+              <div class="bike-topline"><span class="category">{{ bike.category }}</span><span class="status"><i></i>{{ bike.status }}</span></div>
+              <h2>{{ bike.name }}</h2>
+              <p>{{ bike.brand }} <span class="dot">/</span> {{ bike.stock }} in stock</p>
+              <strong>{{ bike.price | currency:'PHP':'symbol-narrow':'1.0-0' }}</strong>
+            </div>
+            <div class="actions">
+              <button type="button" class="secondary" (click)="editBike(bike)">Edit</button>
+              <button type="button" class="danger" (click)="deleteBike(bike)">Delete</button>
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</main>
+
+@if (editingId) {
+  <div class="modal-backdrop" role="presentation" (click)="cancelEdit()">
+    <section class="edit-modal" role="dialog" aria-modal="true" aria-labelledby="edit-title"
+      (click)="$event.stopPropagation()">
+      <div class="modal-scanline"></div>
+      <header class="modal-header">
+        <div><span class="modal-kicker">SYSTEM / MODIFY RECORD</span><h2 id="edit-title">Edit bike</h2></div>
+        <button type="button" class="close-button" aria-label="Close edit dialog" (click)="cancelEdit()">×</button>
+      </header>
+      <form class="modal-form" (ngSubmit)="saveEdit()">
+        <label>Bike name<input [(ngModel)]="form.name" name="edit-name" required></label>
+        <label>Brand<input [(ngModel)]="form.brand" name="edit-brand" required></label>
+        <label>Category<select [(ngModel)]="form.category" name="edit-category">
+          <option value="road">Road</option><option value="mountain">Mountain</option>
+          <option value="hybrid">Hybrid</option><option value="electric">Electric</option><option value="bmx">BMX</option>
+        </select></label>
+        <label>Price<input type="number" [(ngModel)]="form.price" name="edit-price" min="0" required></label>
+        <label>Stock<input type="number" [(ngModel)]="form.stock" name="edit-stock" min="0" step="1" required></label>
+        <label class="wide-field">Image URL <span class="optional">optional</span>
+          <input type="url" [(ngModel)]="form.photo" name="edit-photo" placeholder="https://images.example.com/bike.jpg">
+        </label>
+        <div class="modal-actions">
+          <button type="button" class="secondary" (click)="cancelEdit()">Cancel</button>
+          <button type="submit" [disabled]="isSaving"><span class="button-shine"></span>{{ isSaving ? 'Updating...' : 'Update record' }}</button>
+        </div>
+      </form>
+    </section>
+  </div>
+}

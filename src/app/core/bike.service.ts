@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
 
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  serverTimestamp,
-  updateDoc,
-  where
-} from 'firebase/firestore';
-
-import { getFirebaseFirestore } from './firebase';
 import { Bike, BikeStatus } from '../models/bike.model';
+
+interface FirestoreValue {
+  stringValue?: string;
+  integerValue?: string;
+  doubleValue?: number;
+  booleanValue?: boolean;
+  nullValue?: null;
+  timestampValue?: string;
+}
+
+const FIRESTORE_BIKES_URL =
+  'https://firestore.googleapis.com/v1/projects/reyes-bike-management/databases/(default)/documents/bikes';
+const REQUEST_TIMEOUT_MS = 10000;
 
 /** Fields that must never be sent back to Firestore on update. */
 const READONLY_FIELDS = ['id', 'createdAt', 'updatedAt'] as const;
@@ -22,58 +22,61 @@ const READONLY_FIELDS = ['id', 'createdAt', 'updatedAt'] as const;
   providedIn: 'root'
 })
 export class BikeService {
-  private get bikesCollection() {
-    return collection(getFirebaseFirestore(), 'bikes');
-  }
-
   // CREATE ------------------------------------------------------------------
   async createBike(bike: Omit<Bike, 'id'>): Promise<void> {
-    // Timestamps are structural metadata: never taken from the caller.
-    const payload = { ...bike } as Record<string, unknown>;
-
-    delete payload['createdAt'];
-    delete payload['updatedAt'];
-
-    await addDoc(this.bikesCollection, {
-      ...payload,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+    const now = new Date().toISOString();
+    await this.request(FIRESTORE_BIKES_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        fields: this.toFirestoreFields({
+          ...bike,
+          createdAt: now,
+          updatedAt: now
+        })
+      })
     });
   }
 
-  // READ - CURRENT USER -----------------------------------------------------
-  async getUserBikes(userId: string): Promise<Bike[]> {
-    const snapshot = await getDocs(
-      query(this.bikesCollection, where('ownerId', '==', userId))
-    );
-
-    return this.toBikes(snapshot);
-  }
-
-  // READ - ADMIN ------------------------------------------------------------
+  // READ --------------------------------------------------------------------
   async getAllBikes(): Promise<Bike[]> {
-    const snapshot = await getDocs(this.bikesCollection);
+    const body = await this.request<{
+      documents?: Array<{
+        name: string;
+        fields?: Record<string, FirestoreValue>;
+      }>;
+    }>(FIRESTORE_BIKES_URL);
 
-    return this.toBikes(snapshot);
+    return (body.documents ?? [])
+      .map(document => this.toBike(
+        document.name.split('/').pop() ?? '',
+        this.fromFirestoreFields(document.fields ?? {})
+      ))
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }
 
   // UPDATE ------------------------------------------------------------------
   async updateBike(bikeId: string, data: Partial<Bike>): Promise<void> {
     const payload = { ...data } as Record<string, unknown>;
+    for (const field of READONLY_FIELDS) delete payload[field];
+    payload['updatedAt'] = new Date().toISOString();
 
-    for (const field of READONLY_FIELDS) {
-      delete payload[field];
-    }
+    const fields = this.toFirestoreFields(payload);
+    const updateMask = Object.keys(fields)
+      .map(field => `updateMask.fieldPaths=${encodeURIComponent(field)}`)
+      .join('&');
 
-    await updateDoc(doc(getFirebaseFirestore(), 'bikes', bikeId), {
-      ...payload,
-      updatedAt: serverTimestamp()
+    await this.request(`${FIRESTORE_BIKES_URL}/${encodeURIComponent(bikeId)}?${updateMask}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ fields })
     });
   }
 
   // DELETE ------------------------------------------------------------------
   async deleteBike(bikeId: string): Promise<void> {
-    await deleteDoc(doc(getFirebaseFirestore(), 'bikes', bikeId));
+    await this.request(
+      `${FIRESTORE_BIKES_URL}/${encodeURIComponent(bikeId)}`,
+      { method: 'DELETE' }
+    );
   }
 
   /**
@@ -108,6 +111,99 @@ export class BikeService {
       ownerName: data.ownerName || 'Unknown',
       order: Number(data.order) || Date.now()
     };
+  }
+
+  private fromFirestoreFields(
+    fields: Record<string, FirestoreValue>
+  ): Partial<Bike> {
+    const data: Record<string, unknown> = {};
+
+    for (const [key, value] of Object.entries(fields)) {
+      data[key] = value.stringValue
+        ?? value.integerValue
+        ?? value.doubleValue
+        ?? value.booleanValue
+        ?? value.nullValue
+        ?? value.timestampValue;
+    }
+
+    return data as Partial<Bike>;
+  }
+
+  private toFirestoreFields(
+    data: Record<string, unknown>
+  ): Record<string, FirestoreValue> {
+    const fields: Record<string, FirestoreValue> = {};
+
+    for (const [key, value] of Object.entries(data)) {
+      if (value === null || value === undefined) {
+        fields[key] = { nullValue: null };
+      } else if (typeof value === 'boolean') {
+        fields[key] = { booleanValue: value };
+      } else if (typeof value === 'number') {
+        fields[key] = Number.isInteger(value)
+          ? { integerValue: String(value) }
+          : { doubleValue: value };
+      } else {
+        fields[key] = { stringValue: String(value) };
+      }
+    }
+
+    return fields;
+  }
+
+  private async request<T = void>(
+    url: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(
+      () => controller.abort(),
+      REQUEST_TIMEOUT_MS
+    );
+
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers
+        },
+        signal: controller.signal
+      });
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(
+          'Firebase did not respond within 10 seconds. Check the internet connection and Firestore rules.'
+        );
+      }
+
+      console.error('Firebase request failed:', { url, error });
+      throw new Error('Could not connect to Firebase. Check the browser network connection.');
+    } finally {
+      window.clearTimeout(timeoutId);
+    }
+
+    if (!response.ok) {
+      const details = await response.text();
+      console.error('Firebase request returned an error:', {
+        url,
+        status: response.status,
+        details
+      });
+      throw new Error(
+        `Firebase request failed (${response.status}). Check the published Firestore rules.`
+      );
+    }
+
+    if (response.status === 204) return undefined as T;
+
+    try {
+      return await response.json() as T;
+    } catch {
+      return undefined as T;
+    }
   }
 
   private normaliseStatus(status: unknown): BikeStatus {

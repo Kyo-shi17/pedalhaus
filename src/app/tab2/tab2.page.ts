@@ -1,318 +1,117 @@
-import {
-  Component,
-  inject
-} from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { Bike, BikeCategory } from '../models/bike.model';
+import { BikeService } from '../core/bike.service';
 
-import {
-  AlertController,
-  ToastController
-} from '@ionic/angular';
-
-import {
-  AuthService
-} from '../core/auth.service';
-
-import {
-  BikeService
-} from '../core/bike.service';
-
-import {
-  toUserMessage
-} from '../core/firestore-error';
-
-import {
-  AppUser
-} from '../models/user.model';
-
-
-interface ProfileSnapshot {
-
-  listed: number;
-
-  available: number;
-
-  reserved: number;
-
-  sold: number;
-
-  totalStock: number;
-
+interface BikeEditForm {
+  name: string;
+  brand: string;
+  category: BikeCategory;
+  price: number;
+  stock: number;
+  photo: string;
 }
-
 
 @Component({
   selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss'],
+  templateUrl: './tab2.page.html',
+  styleUrls: ['./tab2.page.scss'],
   standalone: false
 })
-export class Tab2Page {
-
-
-  profile: AppUser | null = null;
-
+export class Tab2Page implements OnInit {
+  bikes: Bike[] = [];
+  editingId: string | null = null;
+  form: BikeEditForm = this.emptyForm();
   isLoading = true;
+  isSaving = false;
+  errorMessage = '';
+  successMessage = '';
+  private readonly bikeService = inject(BikeService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
-  loadError = '';
-
-  isSigningOut = false;
-
-
-  snapshot: ProfileSnapshot = {
-
-    listed: 0,
-
-    available: 0,
-
-    reserved: 0,
-
-    sold: 0,
-
-    totalStock: 0
-
-  };
-
-
-  private authService =
-    inject(AuthService);
-
-  private bikeService =
-    inject(BikeService);
-
-  private alertController =
-    inject(AlertController);
-
-  private toastController =
-    inject(ToastController);
-
-
-  async ionViewWillEnter(): Promise<void> {
-
-    await this.load();
-
+  get availableCount(): number {
+    return this.bikes.filter(bike => bike.status === 'available').length;
   }
 
+  get totalStock(): number {
+    return this.bikes.reduce((total, bike) => total + bike.stock, 0);
+  }
 
-  async load(): Promise<void> {
+  async ngOnInit(): Promise<void> {
+    await this.loadBikes();
+  }
 
+  async loadBikes(): Promise<void> {
     this.isLoading = true;
-
-    this.loadError = '';
-
+    this.errorMessage = '';
 
     try {
-
-      this.profile =
-        await this.authService.getCurrentProfile();
-
-
-      const currentUser =
-        this.authService.getCurrentUser();
-
-
-      if (currentUser) {
-
-        await this.loadSnapshot(currentUser.uid);
-
-      }
-
-    }
-
-    catch (error) {
-
-      console.error(
-        'Loading the profile failed:',
-        error
-      );
-
-
-      this.loadError = toUserMessage(
-        error,
-        'We could not load your profile.'
-      );
-
-    }
-
-    finally {
-
+      this.bikes = await this.bikeService.getAllBikes();
+    } catch (error) {
+      console.error('Loading bikes failed:', error);
+      this.errorMessage = error instanceof Error ? error.message : 'Unable to load bikes.';
+    } finally {
       this.isLoading = false;
-
+      this.changeDetector.detectChanges();
     }
-
   }
 
-
-  private async loadSnapshot(
-    uid: string
-  ): Promise<void> {
-
-    const bikes =
-      await this.bikeService.getUserBikes(uid);
-
-
-    this.snapshot = {
-
-      listed: bikes.length,
-
-      available: bikes.filter(
-        bike => bike.status === 'available'
-      ).length,
-
-      reserved: bikes.filter(
-        bike => bike.status === 'reserved'
-      ).length,
-
-      sold: bikes.filter(
-        bike => bike.status === 'sold'
-      ).length,
-
-      totalStock: bikes.reduce(
-        (sum, bike) => sum + (bike.stock || 0),
-        0
-      )
-
+  editBike(bike: Bike): void {
+    this.editingId = bike.id ?? null;
+    this.form = {
+      name: bike.name,
+      brand: bike.brand,
+      category: bike.category,
+      price: bike.price,
+      stock: bike.stock,
+      photo: bike.photo ?? ''
     };
-
   }
 
-
-  async refresh(event: CustomEvent): Promise<void> {
-
-    await this.load();
-
-
-    (
-      event.target as
-        HTMLIonRefresherElement | null
-    )?.complete();
-
-  }
-
-
-  /** Used by the shell's Refresh action. */
-  async refreshProfile(): Promise<void> {
-
-    await this.load();
-
-  }
-
-
-  get initials(): string {
-
-    const source =
-      this.profile?.name?.trim() ||
-      this.profile?.email ||
-      '?';
-
-
-    return source
-
-      .split(/[\s@._-]+/)
-
-      .filter(Boolean)
-
-      .slice(0, 2)
-
-      .map(part => part.charAt(0).toUpperCase())
-
-      .join('');
-
-  }
-
-
-  get isAdmin(): boolean {
-
-    return this.profile?.role === 'admin';
-
-  }
-
-
-  async signOut(): Promise<void> {
-
-    const alert =
-      await this.alertController.create({
-
-        header: 'Sign out?',
-
-        message:
-          'You will need to sign in again to manage your inventory.',
-
-        buttons: [
-
-          {
-            text: 'Stay signed in',
-            role: 'cancel'
-          },
-
-          {
-            text: 'Sign out',
-            role: 'destructive'
-          }
-
-        ]
-
-      });
-
-
-    await alert.present();
-
-
-    const { role } =
-      await alert.onDidDismiss();
-
-
-    if (
-      role !== 'destructive' ||
-      this.isSigningOut
-    ) {
+  async saveEdit(): Promise<void> {
+    if (!this.editingId || !this.form.name.trim() || !this.form.brand.trim() ||
+        this.form.price < 0 || this.form.stock < 0 || !Number.isInteger(this.form.stock)) {
+      this.errorMessage = 'Enter valid bike details before saving.';
       return;
     }
-
-
-    this.isSigningOut = true;
-
-
+    this.isSaving = true;
     try {
-
-      await this.authService.logout();
-
+      await this.bikeService.updateBike(this.editingId, {
+        ...this.form,
+        name: this.form.name.trim(),
+        brand: this.form.brand.trim()
+      });
+      this.successMessage = 'Bike updated.';
+      this.cancelEdit();
+      await this.loadBikes();
+    } catch (error) {
+      console.error('Updating bike failed:', error);
+      this.errorMessage = 'Unable to update the bike.';
+    } finally {
+      this.isSaving = false;
+      this.changeDetector.detectChanges();
     }
-
-    catch (error) {
-
-      console.error(
-        'Sign out failed:',
-        error
-      );
-
-
-      const toast =
-        await this.toastController.create({
-
-          message: toUserMessage(
-            error,
-            'We could not sign you out.'
-          ),
-
-          duration: 2600,
-
-          color: 'danger',
-
-          position: 'bottom'
-
-        });
-
-
-      await toast.present();
-
-    }
-
-    finally {
-
-      this.isSigningOut = false;
-
-    }
-
   }
 
+  async deleteBike(bike: Bike): Promise<void> {
+    if (!bike.id || !window.confirm(`Delete ${bike.name}?`)) return;
+    try {
+      await this.bikeService.deleteBike(bike.id);
+      this.bikes = this.bikes.filter(item => item.id !== bike.id);
+      this.successMessage = 'Bike deleted.';
+      this.changeDetector.detectChanges();
+    } catch (error) {
+      console.error('Deleting bike failed:', error);
+      this.errorMessage = 'Unable to delete the bike.';
+      this.changeDetector.detectChanges();
+    }
+  }
+
+  cancelEdit(): void {
+    this.editingId = null;
+    this.form = this.emptyForm();
+  }
+
+  private emptyForm(): BikeEditForm {
+    return { name: '', brand: '', category: 'road', price: 0, stock: 0, photo: '' };
+  }
 }

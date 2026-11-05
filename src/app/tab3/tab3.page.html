@@ -1,0 +1,26 @@
+<main class="page profile-page">
+  <header class="intro reveal">
+    <p class="eyebrow">Workspace / Account</p>
+    <h1>Make it <span>yours.</span></h1>
+    <p>Your profile and interface preferences, all in one place.</p>
+  </header>
+
+  <section class="profile-card reveal delay-1">
+    <div class="profile-glow"></div>
+    <div class="avatar">A</div>
+    <div class="profile-copy"><span class="role">Administrator</span><h2>Admin User</h2><p>admin@pedalhaus.com</p></div>
+    <div class="profile-mark">P</div>
+  </section>
+
+  <section class="settings reveal delay-2">
+    <div class="section-heading"><div class="section-icon">✦</div><div><h2>Appearance</h2><p>Choose the mood for every screen.</p></div></div>
+    <div class="theme-options">
+      <button type="button" [class.selected]="themeService.currentMode === 'light'" (click)="setTheme('light')">
+        <span class="theme-preview light-preview"></span><span><strong>Light mode</strong><small>Bright and focused</small></span><b>✓</b>
+      </button>
+      <button type="button" [class.selected]="themeService.currentMode === 'dark'" (click)="setTheme('dark')">
+        <span class="theme-preview dark-preview"></span><span><strong>Dark mode</strong><small>Calm and cinematic</small></span><b>✓</b>
+      </button>
+    </div>
+  </section>
+</main>

@@ -25,6 +25,103 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
+:root {
+  --app-bg: #f5f7fb;
+  --app-surface: #fff;
+  --app-text: #172033;
+  --app-muted: #657087;
+  --app-border: #dfe4ed;
+  --app-primary: #8098f2;
+  --app-primary-strong: #4e55bd;
+  --app-primary-soft: #eef0ff;
+  --app-gradient: linear-gradient(135deg, #656ce2, #9c83ed);
+  --app-shadow: 0 18px 45px rgb(36 43 83 / 10%);
+  --app-display-font: "Segoe UI", "Trebuchet MS", system-ui, sans-serif;
+  --app-tech-font: "Cascadia Code", "Consolas", monospace;
+}
+
+:root[data-theme="dark"] {
+  --app-bg: #10131b;
+  --app-surface: #1b202c;
+  --app-text: #f4f6fb;
+  --app-muted: #b5bfd3;
+  --app-border: #384154;
+  --app-primary: #9badff;
+  --app-primary-strong: #c2caff;
+  --app-primary-soft: #2d3150;
+  --app-gradient: linear-gradient(135deg, #747cf0, #a990f4);
+  --app-shadow: 0 18px 45px rgb(0 0 0 / 24%);
+  --app-display-font: "Segoe UI", "Trebuchet MS", system-ui, sans-serif;
+  --app-tech-font: "Cascadia Code", "Consolas", monospace;
+}
+
+body {
+  margin: 0;
+  background: var(--app-bg);
+  color: var(--app-text);
+  background-image: radial-gradient(circle at 10% 0%, var(--app-primary-soft), transparent 30rem);
+  font-family: var(--app-display-font);
+  letter-spacing: .01em;
+}
+
+h1, h2, h3, strong, button, .add-link, .brand, nav a {
+  font-family: var(--app-display-font);
+}
+
+.eyebrow, .modal-kicker, .splash-wordmark, .stat small, .category, .status {
+  font-family: var(--app-tech-font);
+}
+
+button, .add-link {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--app-primary-strong) 55%, transparent);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 5%) inset, 0 10px 24px rgb(64 73 190 / 18%);
+}
+
+button::before, .add-link::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 20%, rgb(255 255 255 / 25%) 48%, transparent 70%);
+  transform: translateX(-130%);
+  transition: transform .55s ease;
+}
+
+button:hover::before, .add-link:hover::before { transform: translateX(130%); }
+button:active, .add-link:active { transform: translateY(1px) scale(.98); }
+
+:root[data-theme="dark"] .app-mechanics { opacity: .65; }
+:root[data-theme="dark"] .gear, :root[data-theme="dark"] .wheel,
+:root[data-theme="dark"] .crank, :root[data-theme="dark"] .handlebar,
+:root[data-theme="dark"] .chain-loop { color: #8996ff; }
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-10px) rotate(4deg); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shine {
+  0%, 45% { transform: translateX(-100%); }
+  70%, 100% { transform: translateX(100%); }
+}
+
+.reveal { animation: reveal .55s cubic-bezier(.2, .8, .2, 1) both; }
+.delay-1 { animation-delay: .08s; }
+.delay-2 { animation-delay: .16s; }
+
 /**
  * Ionic Dark Mode
  * -----------------------------------------------------
@@ -42,6 +139,22 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  min-height: 100%;
+  overflow-y: auto;
+}
+
+html, body, app-root {
+  min-height: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
 }
 
 body {
@@ -72,6 +185,12 @@ ion-content {
     animation-iteration-count: 1 !important;
     transition-duration: .001ms !important;
     scroll-behavior: auto !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gear, .wheel, .crank, .chain-loop, .hero-orbit, .splash-logo, .splash-grid {
+      animation: none !important;
+    }
   }
 }
 
@@ -449,4 +568,73 @@ ion-modal {
   .ph-card-body {
     padding: 15px;
   }
+}
+
+/* Active app theme overrides the starter Ionic tokens above. */
+body {
+  background: var(--app-bg);
+  color: var(--app-text);
+  font-family: var(--ph-font), system-ui, sans-serif;
+}
+
+:root[data-theme="light"] body {
+  background: #f7f8fc;
+  color: #172033;
+}
+
+:root[data-theme="dark"] body {
+  background: #080a10;
+  color: #f4f6fb;
+}
+
+:root[data-theme="light"] .splash {
+  background: #f7f8fc;
+  color: #172033;
+}
+
+:root[data-theme="light"] .splash-grid {
+  background-image: linear-gradient(rgb(91 96 220 / 10%) 1px, transparent 1px), linear-gradient(90deg, rgb(91 96 220 / 10%) 1px, transparent 1px);
+}
+
+:root[data-theme="light"] .splash-logo {
+  background: rgb(101 108 226 / 8%);
+  border-color: rgb(91 96 220 / 35%);
+}
+
+:root[data-theme="light"] .splash-logo svg { color: #5961d5; }
+:root[data-theme="light"] .splash p { color: #5961d5; }
+:root[data-theme="dark"] .splash { background: #080a10; }
+
+:root[data-theme="dark"] .status {
+  background: #123b2a;
+  color: #76e0a7;
+}
+
+:root[data-theme="dark"] .danger {
+  background: #482128 !important;
+  color: #ffabb4 !important;
+}
+
+:root[data-theme="dark"] .error {
+  background: #482128;
+  color: #ffb8bf;
+}
+
+:root[data-theme="dark"] .success {
+  background: #123b2a;
+  color: #8ce8b4;
+}
+
+:root[data-theme="dark"] .stat-icon.green {
+  background: #123b2a;
+  color: #76e0a7;
+}
+
+:root[data-theme="dark"] .stat-icon.orange {
+  background: #493018;
+  color: #ffc477;
+}
+
+:root[data-theme="dark"] .modal-backdrop {
+  background: rgb(0 0 0 / 80%);
 }

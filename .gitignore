@@ -69,3 +69,17 @@ testem.log
 .DS_Store
 Thumbs.db
 .andromity/
+
+# Environment files and private credentials
+.env
+.env.*
+!.env.example
+
+# Firebase private credentials
+serviceAccountKey*.json
+firebase-adminsdk-*.json
+*service-account*.json
+
+# Private keys
+*.pem
+*.key

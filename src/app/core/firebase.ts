@@ -1,14 +1,13 @@
 import { FirebaseApp, getApps, initializeApp } from 'firebase/app';
-import { Auth, getAuth } from 'firebase/auth';
 import { Firestore, getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-   apiKey: "AIzaSyBEa24b1k1ENLsASj-UF4AT02I_FWKHJ50",
-  authDomain: "pedalhaus-bike-shop.firebaseapp.com",
-  projectId: "pedalhaus-bike-shop",
-  storageBucket: "pedalhaus-bike-shop.firebasestorage.app",
-  messagingSenderId: "298045369218",
-  appId: "1:298045369218:web:7c163a58e15bc489f97d9b"
+  apiKey: "AIzaSyC4kt9vmYp1yi0vnq-qSkHlX6b7VPg3RZE",
+  authDomain: "reyes-bike-management.firebaseapp.com",
+  projectId: "reyes-bike-management",
+  storageBucket: "reyes-bike-management.firebasestorage.app",
+  messagingSenderId: "553179998449",
+  appId: "1:553179998449:web:b2535e1ce8c79471d52150"
 };
 
 /**
@@ -18,7 +17,6 @@ const firebaseConfig = {
  * the SDK is only initialised the first time `auth`/`db` is actually read.
  */
 let firebaseApp: FirebaseApp | null = null;
-let authInstance: Auth | null = null;
 let firestoreInstance: Firestore | null = null;
 
 function getFirebaseApp(): FirebaseApp {
@@ -31,14 +29,6 @@ function getFirebaseApp(): FirebaseApp {
   return firebaseApp;
 }
 
-export function getFirebaseAuth(): Auth {
-  if (!authInstance) {
-    authInstance = getAuth(getFirebaseApp());
-  }
-
-  return authInstance;
-}
-
 export function getFirebaseFirestore(): Firestore {
   if (!firestoreInstance) {
     firestoreInstance = getFirestore(getFirebaseApp());
@@ -46,4 +36,3 @@ export function getFirebaseFirestore(): Firestore {
 
   return firestoreInstance;
 }
-

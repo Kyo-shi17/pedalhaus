@@ -7,22 +7,12 @@ import {
 } from '@angular/platform-browser';
 
 import {
-  RouteReuseStrategy
-} from '@angular/router';
-
-import {
-  IonicModule,
-  IonicRouteStrategy
-} from '@ionic/angular/lazy';
-
-import {
   AppComponent
 } from './app.component';
 
 import {
   AppRoutingModule
 } from './app-routing.module';
-
 
 @NgModule({
 
@@ -36,22 +26,7 @@ import {
 
     BrowserModule,
 
-    IonicModule.forRoot(),
-
     AppRoutingModule
-
-  ],
-
-  providers: [
-
-    {
-      provide:
-        RouteReuseStrategy,
-
-      useClass:
-        IonicRouteStrategy
-    }
-
   ],
 
   bootstrap: [
@@ -61,4 +36,5 @@ import {
   ]
 
 })
-export class AppModule {}
+export class AppModule {
+}

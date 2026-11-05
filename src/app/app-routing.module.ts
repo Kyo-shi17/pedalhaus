@@ -1,99 +1,35 @@
 import { NgModule } from '@angular/core';
-
-import {
-  PreloadAllModules,
-  RouterModule,
-  Routes
-} from '@angular/router';
-
+import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
-
   {
     path: '',
-
-    redirectTo: 'login',
-
+    redirectTo: 'add',
     pathMatch: 'full'
   },
-
-
   {
-    path: 'login',
-
+    path: 'add',
     loadChildren: () =>
-      import('./login/login.module')
-        .then(
-          m => m.LoginPageModule
-        )
+      import('./tab1/tab1.module').then(module => module.Tab1PageModule)
   },
-
-
   {
-    path: 'signup',
-
+    path: 'inventory',
     loadChildren: () =>
-      import('./signup/signup.module')
-        .then(
-          m => m.SignupPageModule
-        )
+      import('./tab2/tab2.module').then(module => module.Tab2PageModule)
   },
-
-
   {
-    path: 'tabs',
-
+    path: 'profile',
     loadChildren: () =>
-      import('./tabs/tabs.module')
-        .then(
-          m => m.TabsPageModule
-        )
+      import('./tab3/tab3.module').then(module => module.Tab3PageModule)
   },
-
-
-  {
-    path: 'admin-dashboard',
-
-    loadChildren: () =>
-      import(
-        './admin-dashboard/admin-dashboard.module'
-      )
-      .then(
-        m => m.AdminDashboardPageModule
-      )
-  },
-
-
-  /** Any unknown URL returns people to the sign-in screen. */
   {
     path: '**',
-
-    redirectTo: 'login'
+    redirectTo: ''
   }
-
 ];
 
-
 @NgModule({
-
-  imports: [
-
-    RouterModule.forRoot(
-      routes,
-
-      {
-        preloadingStrategy:
-          PreloadAllModules
-      }
-    )
-
-  ],
-
-  exports: [
-
-    RouterModule
-
-  ]
-
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
 })
 export class AppRoutingModule {}

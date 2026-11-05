@@ -1,6 +1,47 @@
-<ion-app>
+@if (showSplash) {
+  <section class="splash" aria-label="Loading Pedalhaus" role="status">
+    <div class="splash-grid"></div>
+    <div class="mechanics splash-mechanics" aria-hidden="true">
+      <span class="gear gear-large"></span><span class="gear gear-small"></span>
+      <span class="wheel wheel-left"></span><span class="wheel wheel-right"></span>
+      <span class="crank"></span><span class="chain-loop"></span>
+    </div>
+    <div class="splash-logo">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="32"></circle>
+        <path d="M50 18v15M50 67v15M18 50h15M67 50h15M27 27l11 11M62 62l11 11M73 27 62 38M38 62 27 73"></path>
+        <path class="splash-bolt" d="m57 27-20 27h13l-7 19 20-28H50z"></path>
+      </svg>
+    </div>
+    <div class="splash-wordmark"><span>PE</span>DALHAUS</div>
+    <p>BIKE SYSTEMS / INITIALIZING</p>
+    <div class="splash-progress"><span></span></div>
+  </section>
+} @else {
+  <div class="mechanics app-mechanics" aria-hidden="true">
+    <span class="gear gear-large"></span><span class="gear gear-small"></span>
+    <span class="wheel wheel-left"></span><span class="wheel wheel-right"></span>
+    <span class="handlebar"></span><span class="crank"></span><span class="chain-loop"></span>
+  </div>
+  <header class="app-header">
+    <a class="brand" routerLink="/add">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32"></circle><path d="M50 18v15M50 67v15M18 50h15M67 50h15M27 27l11 11M62 62l11 11M73 27 62 38M38 62 27 73"></path><path class="brand-bolt" d="m57 27-20 27h13l-7 19 20-28H50z"></path></svg>
+      </span>
+      <span><strong>Pedalhaus</strong><small>Bike management</small></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a routerLink="/add" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="nav-icon">+</span><span>Add bike</span>
+      </a>
+      <a routerLink="/inventory" routerLinkActive="active">
+        <span class="nav-icon">[]</span><span>Inventory</span>
+      </a>
+      <a routerLink="/profile" routerLinkActive="active">
+        <span class="nav-icon">A</span><span>Profile</span>
+      </a>
+    </nav>
+  </header>
 
-  <ion-router-outlet>
-  </ion-router-outlet>
-
-</ion-app>
+  <router-outlet></router-outlet>
+}

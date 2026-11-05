@@ -11,16 +11,8 @@ import {
 } from '@angular/forms';
 
 import {
-  IonicModule
-} from '@ionic/angular/lazy';
-
-import {
   Tab1PageRoutingModule
 } from './tab1-routing.module';
-
-import {
-  SharedModule
-} from '../shared/shared.module';
 
 import {
   Tab1Page
@@ -34,10 +26,6 @@ import {
     CommonModule,
 
     FormsModule,
-
-    IonicModule,
-
-    SharedModule,
 
     Tab1PageRoutingModule
 
