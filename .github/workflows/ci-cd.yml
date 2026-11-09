@@ -1,0 +1,109 @@
+﻿name: PedalHaus CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  # CONTINUOUS INTEGRATION
+  continuous-integration:
+    name: Continuous Integration
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run unit tests
+        shell: powershell
+        run: |
+          $specFiles = @(Get-ChildItem -Path src -Recurse -Filter "*.spec.ts" -File -ErrorAction SilentlyContinue)
+
+          if ($specFiles.Count -gt 0) {
+            Write-Host "Angular test files found. Running tests..."
+            npm test -- --configuration=ci
+
+            if ($LASTEXITCODE -ne 0) {
+              exit $LASTEXITCODE
+            }
+          }
+          else {
+            Write-Host "No Angular spec files found. Skipping unit tests."
+          }
+
+      - name: Build Angular application
+        run: npm run build -- --configuration production
+
+  # CONTINUOUS DEPLOYMENT
+  deploy:
+    name: Continuous Deployment
+    needs: continuous-integration
+
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+
+    runs-on: [self-hosted, Windows, X64]
+
+    steps:
+      - name: Checkout latest source code
+        uses: actions/checkout@v7
+
+      - name: Verify Docker engine
+        run: docker info
+
+      - name: Validate Docker Compose
+        run: docker compose -p pedalhaus config --quiet
+
+      - name: Build and deploy PedalHaus
+        run: docker compose -p pedalhaus up -d --build --remove-orphans
+
+      - name: Verify application deployment
+        shell: powershell
+        run: |
+          $url = "http://localhost:8100/"
+          $healthy = $false
+
+          for ($i = 1; $i -le 20; $i++) {
+            try {
+              $response = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 5
+
+              if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 400) {
+                $healthy = $true
+                break
+              }
+            }
+            catch {
+              Start-Sleep -Seconds 3
+            }
+          }
+
+          if (-not $healthy) {
+            docker compose -p pedalhaus ps
+            docker compose -p pedalhaus logs --tail=100
+            throw "PedalHaus deployment verification failed."
+          }
+
+          Write-Host "PedalHaus successfully deployed!"
+          Write-Host "Application: $url"
+
+      - name: Display running containers
+        run: docker compose -p pedalhaus ps
